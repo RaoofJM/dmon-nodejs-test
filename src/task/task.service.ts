@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Task, Task as TaskSchema } from './task.interface';
+import { Task, Task as TaskSchema } from './task.schema';
 import { CreateTaskDto } from './dto/createTask.dto';
 import { UpdateTaskDto } from './dto/updateTask.dto';
 
@@ -15,8 +15,10 @@ export class TaskService {
     @InjectModel(Task.name) private readonly taskModel: Model<TaskSchema>,
   ) {}
 
-  async findAll(): Promise<TaskSchema[]> {
-    return this.taskModel.find().exec();
+  async findAll(page: number, limit: number): Promise<Task[]> {
+    const skip = (page - 1) * limit;
+
+    return this.taskModel.find().skip(skip).limit(limit).exec();
   }
 
   async findById(id: string): Promise<TaskSchema | null> {

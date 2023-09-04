@@ -9,17 +9,20 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
-import { Task } from './task.interface';
+import { Task } from './task.schema';
 import { CreateTaskDto } from './dto/createTask.dto';
 import { UpdateTaskDto } from './dto/updateTask.dto';
+import { FindAllTasksDto } from './dto/finaAllTasks.dto';
 
 @Controller('tasks')
 export class TaskController {
   constructor(private readonly tasksService: TaskService) {}
 
   @Get()
-  async findAll(): Promise<Task[]> {
-    return this.tasksService.findAll();
+  async findAll(@Body() body: FindAllTasksDto): Promise<Task[]> {
+    const page = body.page ? parseInt(body.page.toString()) : 1;
+    const limit = body.limit ? parseInt(body.limit.toString()) : 5;
+    return this.tasksService.findAll(page, limit);
   }
 
   @Get(':id')
